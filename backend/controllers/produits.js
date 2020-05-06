@@ -26,7 +26,10 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 // Attention WILL commence ici par créer un nouvel objet ! 
-exports.modfySauce = (res, rep, next) => {
+exports.modifySauce = (res, rep, next) => {
+    const sauce = new Sauce({
+        ...req.body
+    });
     Sauce.updateOne({
             _id: req.params.id
         }, {
@@ -63,3 +66,4 @@ exports.getAllSauce = (req, res, next) => {
             error
         }));
 };
+
