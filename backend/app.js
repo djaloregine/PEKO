@@ -1,9 +1,14 @@
 const express = require('express');
+const app = express();
+
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const app = express();
-const produitsRoutes = require('./routes/produits');
-const usagersRoutes = require('./routes/usagers');
+
+const path = require('path');
+
+const produitsRoutes = require('../routes/produits');
+const usagersRoutes = require('../routes/usagers');
+
 
 mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/test?retryWrites=true&w=majority', {
         useNewUrlParser: true,
@@ -15,8 +20,6 @@ mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/
 
 app.use(bodyParser.json());
 
-
-
 // middleware correspondant à CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,12 +30,6 @@ app.use((req, res, next) => {
 
 app.use('/api/sauces', produitsRoutes);
 
-app.use('api/auth', usagersRoutes);
-
-
-
-
-
-
+app.use('/api/auth', usagersRoutes);
 
 module.exports = app;
