@@ -1,9 +1,9 @@
-const User = require('./models/usagers');
+const User = require('../models/usagers');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
+    bcrypt.hash(req.body.password, 10) // saler le mdp 10 fois
         .then(hash => {
             const user = new User({
                 email: req.body.email,
@@ -11,7 +11,7 @@ exports.signup = (req, res, next) => {
             });
             user.save()
                 .then(() => res.status(201).json({
-                    message: 'Utilisateur créé !'
+                    message: 'Usager créé !'
                 }))
                 .catch(error => res.status(400).json({
                     error
@@ -20,6 +20,7 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({
             error
         }));
+    next();
 };
 
 exports.login = (req, res, next) => {
@@ -29,7 +30,7 @@ exports.login = (req, res, next) => {
         .then(user => {
             if (!user) {
                 return res.status(401).json({
-                    error: 'Usagère ou usager non trouvé.e'
+                    error: 'Usager non trouvé'
                 });
             }
             bcrypt.compare(req.body.password, user.password)

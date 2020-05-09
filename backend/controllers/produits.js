@@ -11,6 +11,7 @@ exports.createSauce = (req, res, next) => {
         .catch((error) => res.status(400).json({
             error
         }));
+        next();
 };
 
 exports.getOneSauce = (req, res, next) => {
@@ -23,6 +24,7 @@ exports.getOneSauce = (req, res, next) => {
         .catch((error) => res.status(404).json({
             error
         }));
+        next();
 };
 
 // Attention WILL commence ici par créer un nouvel objet ! 
@@ -42,6 +44,7 @@ exports.modifySauce = (res, rep, next) => {
         .catch((error) => res.status(404).json({
             error
         }));
+        next();
 };
 
 
@@ -55,6 +58,7 @@ exports.deleteSauce = (req, res, next) => {
         .catch((error) => res.status(400).json({
             error
         }));
+        next();
 
 };
 

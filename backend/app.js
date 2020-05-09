@@ -3,12 +3,12 @@ const app = express();
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 const path = require('path');
 
-const produitsRoutes = require('../routes/produits');
-const usagersRoutes = require('../routes/usagers');
-
+const produitsRoutes = require('./routes/produits');
+const usagersRoutes = require('./routes/usagers');
 
 mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/test?retryWrites=true&w=majority', {
         useNewUrlParser: true,
@@ -18,7 +18,7 @@ mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-app.use(bodyParser.json());
+
 
 // middleware correspondant à CORS
 app.use((req, res, next) => {
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/sauces', produitsRoutes);
+app.use('/api/produits', produitsRoutes);
 
 app.use('/api/auth', usagersRoutes);
 
