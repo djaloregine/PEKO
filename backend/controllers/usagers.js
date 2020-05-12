@@ -2,6 +2,8 @@ const User = require('../models/usagers');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 
+
+
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10) // saler le mdp 10 fois
         .then(hash => {
@@ -20,8 +22,8 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({
             error
         }));
-    next();
 };
+
 
 exports.login = (req, res, next) => {
     User.findOne({
@@ -43,18 +45,15 @@ exports.login = (req, res, next) => {
                     res.status(200).json({
                         userId: user._id,
                         token: jwt.sign({
-                                userId: user._id
-                            },
-                            'RANDOM_TOKEN_SECRET', {
-                                expiresin: '24h'
-                            }
-                        )
+                            userId: user._id
+                        }, 'secret', {
+                            expiresIn: '24h'
+                        })
                     });
                 })
-                .catch((error) => res.status(500).json({
+                .catch((error) => res.status(501).json({
                     error
                 }))
-
         })
         .catch((error) => res.status(500).json({
             error
