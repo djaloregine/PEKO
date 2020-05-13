@@ -29,7 +29,8 @@ app.use((req, res, next) => {
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/api/sauces', produitsRoutes);
 app.use('/api/auth', usagersRoutes);
+app.use('/api/sauces', produitsRoutes);
+
 
 module.exports = app;

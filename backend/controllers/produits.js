@@ -1,5 +1,6 @@
-const Sauce = require('../models/produits');
+const Sauce = require('../models/sauces');
 const fs = require('fs');
+
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -14,7 +15,6 @@ exports.createSauce = (req, res, next) => {
         .catch((error) => res.status(400).json({
             error
         }));
-    next();
 };
 
 exports.getOneSauce = (req, res, next) => {
@@ -27,7 +27,6 @@ exports.getOneSauce = (req, res, next) => {
         .catch((error) => res.status(404).json({
             error
         }));
-    next();
 };
 
 // Attention WILL commence ici par créer un nouvel objet ! 
@@ -47,7 +46,6 @@ exports.modifySauce = (res, rep, next) => {
         .catch((error) => res.status(404).json({
             error
         }));
-    next();
 };
 
 
@@ -74,10 +72,10 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 
-exports.getAllSauce = (req, res, next) => {
+exports.getAllSauce = (req, res) => {
     Sauce.find()
         .then((sauces) => res.status(200).json(sauces))
         .catch((error) => res.status(404).json({
-            error
+            message: " ras le bol"
         }));
 };
