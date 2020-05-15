@@ -5,8 +5,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-const path = require('path');
-
 const usagersRoutes = require('./routes/usagers');
 const produitsRoutes = require('./routes/produits');
 
@@ -27,6 +25,8 @@ app.use((req, res, next) => {
     next();
 });
 
+const path = require('path');
+
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/auth', usagersRoutes);
@@ -34,3 +34,29 @@ app.use('/api/sauces', produitsRoutes);
 
 
 module.exports = app;
+
+
+
+
+
+
+
+
+
+/* var multer = require('multer'); 
+    var uploadPicture = multer({ 
+    dest: 'temp/' 
+    }); 
+    var sharp = require('sharp'); 
+
+    app.post('/upload', uploadPicture.single('profileIcon'), function (req,res) { 
+     fs.readFile(req.file.path, function (err, data) { 
+     if (err) res.end('UNRESOLVABLE ERROR'); 
+    sharp(data).resize(200, 200).toFile('./photos/pic.jpg', function (err, info) { 
+    //DELETE THE TEMPORAL FILE 
+      fs.unlink(req.file.path, function (error) { 
+       if (error) res.end('UNRESOLVABLE ERROR'); //CODE 3 ALARM 
+       res.end('success'); 
+      }); 
+    } 
+    */

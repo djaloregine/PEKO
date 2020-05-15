@@ -7,33 +7,43 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     sauce.save()
-        .then(() => res.status(201).json({
-            message: "traratata"
-        }))
+        .then(() =>
+            res.status(201).json({
+                message: "traratata"
+            }))
         .catch((error) => res.status(400).json({
             error
         }));
 };
 
-exports.getOneSauce = (req, res, next) => {
+exports.getOneSauce = (req, res) => {
     Sauce.findOne({
             _id: req.params.id
         })
-        .then((sauce) => res.status(200).json({
-            sauce
-        }))
-        .catch((error) => res.status(404).json({
-            error
-        }));
+        .then((sauce) => {
+            res.status(200).json(
+                sauce
+            )
+        })
+        .catch((error) => {
+            res.status(404).json({
+                error
+            })
+        });
 };
 
 // Attention WILL commence ici par créer un nouvel objet ! 
-exports.modifySauce = (res, rep, next) => {
-    const sauce = new Sauce({
+exports.modifySauce = (req, res) => {
+    const sauceObject = JSON.parse(req.body.sauce);
+   sauceObject = req.file ? {
+        ...JSON.parse(req.body.sauce),
+        imageURL: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : {
         ...req.body
-    });
+    };
     Sauce.updateOne({
             _id: req.params.id
         }, {
