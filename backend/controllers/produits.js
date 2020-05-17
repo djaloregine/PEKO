@@ -85,41 +85,60 @@ exports.getAllSauce = (req, res) => {
     Sauce.find()
         .then((sauces) => res.status(200).json(sauces))
         .catch((error) => res.status(404).json({
-            message: " ras le bol"
+            message: " les sauces n'ont pas été trouvées "
         }));
 };
 
 
-exports.createLikes = (req, res, next) => {
+exports.likeSauce = (req, res) => {
+    // on prend l'id de la sauce pour incrémenter ou décrémenter le compteur  
+    const countLikes = req.file ? {
+        ...JSON.parse(req.body.sauce),
+
+    } : {
+        ...req.body
+    };
+    const countDislikes = req.file ? {
+        ...JSON.parse(req.body.sauce),
+
+    } : {
+        ...req.body
+    };
+
     const action = req.body.action;
-    const userLikes = [userId];
-    const likesCount = userLikes.length + 1
-    likesCount = 0
-    const userDislikes = [userId]
-    const dislikesCount = userDislikes.length + 1
-    dislikesCount = 0
+    const usersLiked = [userId] === 0;
+    countLikes = usersLiked.length;
+    const usersDisliked = [userId] === 0;
+    countDislikes = usersDisliked.length;
 
-    const likeCount = action === 'Like' ? 1 : -1;
-    
-    createLikes.update({
-        _id: req.params.id
-    }, {
-        $inc: {
-            likes_count: counter
-        }
-    }, {}, (err, numberAffected) => {
-        res.send('');
-    });
+    if (action === 1) {
+        Sauce.updateOne({
+            usersLiked.push = [userId];
+            return countLikes = +1;
+        })
 
-    // le user se connecte 
-    // trouver une sauce sauce.findOne
-    // cliquer sur un bouton (1, 0, -1) 
-    // if (likes === 1) {le userId est ajouté au tableau de ceux qui aiment} // le tableau du userID est mis à jour // le nombre de like est augmenté de 1
-    // else if (likes === 0) {le _userId est enlevé soit au tableau de ceux qui aiment, soit au tableau de ceux qu n'aiment pas} //  le tableau du userID est mis à jour // le nombre de like ou dislike est diminué de 1 // 
-    // else càd -1, le _userId est ajouté au tableau de ceux qui n'aiment pas // le tableau du userID est mis à jour // le nombre de dislike est augmenté de 1
-    // le _userId ne doit avoir la possibilité d'utiliser sa voix qu'une seule fois sur une sauce 
+    } else if (action === -1) {
+        Sauce.updateOne({
+        usersDisliked.push = [userId];
+            return  countDislikes = +1;
+        })
+    }
+};
 
 
 
-    // https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
-}
+
+
+
+
+// le user se connecte 
+// trouver une sauce sauce.findOne
+// cliquer sur un bouton (1, 0, -1) 
+// if (likes === 1) {le userId est ajouté au tableau de ceux qui aiment} // le tableau du userID est mis à jour // le nombre de like est augmenté de 1
+// else if (likes === 0) {le _userId est enlevé soit au tableau de ceux qui aiment, soit au tableau de ceux qu n'aiment pas} //  le tableau du userID est mis à jour // le nombre de like ou dislike est diminué de 1 // 
+// else càd -1, le _userId est ajouté au tableau de ceux qui n'aiment pas // le tableau du userID est mis à jour // le nombre de dislike est augmenté de 1
+// le _userId ne doit avoir la possibilité d'utiliser sa voix qu'une seule fois sur une sauce 
+
+
+
+// https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
