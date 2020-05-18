@@ -90,50 +90,50 @@ exports.getAllSauce = (req, res) => {
 };
 
 
+
 exports.likeSauce = (req, res) => {
     // on prend l'id de la sauce pour incrémenter ou décrémenter le compteur  
-    const countLikes = req.file ? {
-        ...JSON.parse(req.body.sauce),
-
-    } : {
-        ...req.body
-    };
-    const countDislikes = req.file ? {
-        ...JSON.parse(req.body.sauce),
-
-    } : {
-        ...req.body
-    };
-
     const action = req.body.action;
-    const usersLiked = [userId] === 0;
-    countLikes = usersLiked.length;
-    const usersDisliked = [userId] === 0;
-    countDislikes = usersDisliked.length;
 
-    if (action === 1) {
-        Sauce.updateOne({
-            usersLiked.push = [userId];
-            return countLikes = +1;
+    const usersLiked = req.body.usersLiked;
+    const usersDisLiked = req.body.usersDisLiked;
+
+    const disLikes = req.body.dislikes;
+
+    Sauce.findOne({
+            _id: req.params.id,
+            userId: req.body.userId,
+            likes: req.body.like
+        }).then((userId) => {
+            if (!usersLiked.indexOf(userId) && !usersDisLiked.indexOf(userId)) {
+                Sauce.updateOne({
+                    _id: req.params.id
+                }, {
+                    ...req.body,
+                    _id: req.params.id
+                }).then((likes) => {
+                    if (action === 1) {
+                        usersLiked.push('userId');
+                        return likes;
+                    } else {
+                        const place = usersLiked.indexOf('userId');
+                        usersLiked.splice(place, 1);
+                        return likes;
+                    }
+                })
+            }
         })
-
-    } else if (action === -1) {
-        Sauce.updateOne({
-        usersDisliked.push = [userId];
-            return  countDislikes = +1;
-        })
-    }
-};
+        .catch((error) => res.status(500).json({
+            message: 'tu es sur la bonne erreur'
+        }));
+}
 
 
 
 
-
-
-
-// le user se connecte 
-// trouver une sauce sauce.findOne
-// cliquer sur un bouton (1, 0, -1) 
+// trouver une sauce pour en modifier le body 
+// trouver un user pour savoir s'il a déjà liker sur cette sauce ou pas 
+// liker ou disliker, enlever le like ou le dislike  
 // if (likes === 1) {le userId est ajouté au tableau de ceux qui aiment} // le tableau du userID est mis à jour // le nombre de like est augmenté de 1
 // else if (likes === 0) {le _userId est enlevé soit au tableau de ceux qui aiment, soit au tableau de ceux qu n'aiment pas} //  le tableau du userID est mis à jour // le nombre de like ou dislike est diminué de 1 // 
 // else càd -1, le _userId est ajouté au tableau de ceux qui n'aiment pas // le tableau du userID est mis à jour // le nombre de dislike est augmenté de 1
@@ -142,3 +142,6 @@ exports.likeSauce = (req, res) => {
 
 
 // https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
+
+
+//https://stackoverrun.com/fr/q/12273165
