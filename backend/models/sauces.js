@@ -44,7 +44,7 @@ const sauceSchema = mongoose.Schema({
         type: Array,
 
     },
-    usersDisLiked: {
+    usersDisliked: {
         type: Array,
 
     },

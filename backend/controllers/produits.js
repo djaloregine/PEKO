@@ -92,56 +92,57 @@ exports.getAllSauce = (req, res) => {
 
 
 exports.likeSauce = (req, res) => {
-    // on prend l'id de la sauce pour incrémenter ou décrémenter le compteur  
-    const action = req.body.action;
-
-    const usersLiked = req.body.usersLiked;
-    const usersDisLiked = req.body.usersDisLiked;
-
-    const disLikes = req.body.dislikes;
-
-    Sauce.findOne({
+    const action = 0;
+    Sauce.updateOne({
             _id: req.params.id,
-            userId: req.body.userId,
-            likes: req.body.like
-        }).then((userId) => {
-            if (!usersLiked.indexOf(userId) && !usersDisLiked.indexOf(userId)) {
-                Sauce.updateOne({
-                    _id: req.params.id
-                }, {
-                    ...req.body,
-                    _id: req.params.id
-                }).then((likes) => {
-                    if (action === 1) {
-                        usersLiked.push('userId');
-                        return likes;
-                    } else {
-                        const place = usersLiked.indexOf('userId');
-                        usersLiked.splice(place, 1);
-                        return likes;
+        }, {
+            ...req.body,
+            _id: req.params.id
+        }).then(() => {
+            userId: req.body.userId
+            if (action === 1) {
+                likes: req.body.likes === 0
+                usersLiked: req.body.usersLiked
+                $addToSet: {
+                    usersLiked,
+                    1
+                }
+                $inc: {
+                    likes,
+                    1
+                }
+            }
+            else if (action === -1) {
+                dislikes: req.body.dislikes === 0
+                usersDisliked: req.body.usersDisliked
+                $addToSet: {
+                    usersDisliked,
+                    1
+                }
+                $inc: {
+                    dislikes,
+                    1
+                }
+            }
+            else {
+                if (usersLiked.indexOf(userId)) {
+                    const place = usersLiked.indexOf('userId');
+                    const userMin = usersLiked.splice(place, 1);
+                    $pull: {
+                        usersLiked,
+                        userMin
                     }
-                })
+                } else if (usersDisliked.indexOf(userId)) {
+                    const place = usersDisliked.indexOf('userId');
+                    const userMin = usersDisliked.splice(place, 1);
+                    $pull: {
+                        usersDisliked,
+                        userMin
+                    }
+                }
             }
         })
         .catch((error) => res.status(500).json({
             message: 'tu es sur la bonne erreur'
         }));
 }
-
-
-
-
-// trouver une sauce pour en modifier le body 
-// trouver un user pour savoir s'il a déjà liker sur cette sauce ou pas 
-// liker ou disliker, enlever le like ou le dislike  
-// if (likes === 1) {le userId est ajouté au tableau de ceux qui aiment} // le tableau du userID est mis à jour // le nombre de like est augmenté de 1
-// else if (likes === 0) {le _userId est enlevé soit au tableau de ceux qui aiment, soit au tableau de ceux qu n'aiment pas} //  le tableau du userID est mis à jour // le nombre de like ou dislike est diminué de 1 // 
-// else càd -1, le _userId est ajouté au tableau de ceux qui n'aiment pas // le tableau du userID est mis à jour // le nombre de dislike est augmenté de 1
-// le _userId ne doit avoir la possibilité d'utiliser sa voix qu'une seule fois sur une sauce 
-
-
-
-// https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
-
-
-//https://stackoverrun.com/fr/q/12273165
