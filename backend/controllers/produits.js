@@ -12,7 +12,7 @@ exports.createSauce = (req, res, next) => {
     sauce.save()
         .then(() =>
             res.status(201).json({
-                message: "traratata"
+                message: "sauce créée"
             }))
         .catch((error) => res.status(400).json({
             error
@@ -34,29 +34,6 @@ exports.getOneSauce = (req, res) => {
             })
         });
 };
-
-// Attention WILL commence ici par créer un nouvel objet ! 
-exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ? {
-        ...JSON.parse(req.body.sauce),
-        imageURL: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : {
-        ...req.body
-    };
-    Sauce.updateOne({
-            _id: req.params.id
-        }, {
-            ...sauceObject,
-            _id: req.params.id
-        })
-        .then(() => res.status(200).json({
-            message: 'sauce modifiée'
-        }))
-        .catch((error) => res.status(404).json({
-            error
-        }));
-};
-
 
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({
@@ -90,16 +67,38 @@ exports.getAllSauce = (req, res) => {
 };
 
 
-exports.likeSauce = (req, res) => {
+// Attention WILL commence ici par créer un nouvel objet ! 
+exports.modifySauce = (req, res, next) => {
+    const sauceObject = req.file ? {
+        ...JSON.parse(req.body.sauce),
+        imageURL: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : {
+        ...req.body
+    };
+    Sauce.updateOne({
+            _id: req.params.id
+        }, {
+            ...sauceObject,
+            _id: req.params.id
+        })
+        .then(() => res.status(200).json({
+            message: 'sauce modifiée'
+        }))
+        .catch((error) => res.status(404).json({
+            error
+        }));
+};
 
+exports.likeSauce = (req, res) => {
     Sauce.findById(req.params.id, (error, data) => {
-        let sauce = data
+        let sauce = data // collection = sauces sur MongoDB
         switch (req.body.like) {
             case 1:
-                sauce['likes'] = sauce['likes'] ? sauce['likes'] : 0
+                sauce['likes'] = sauce['likes'] ? sauce['likes'] : 0 // remet compteur à 0
                 sauce['dislikes'] = sauce['dislikes'] ? sauce['dislikes'] : 0
                 if (sauce.usersLiked.indexOf(req.body.userId) == -1) {
                     const place = sauce.usersDisliked.indexOf(req.body.userId);
+                    // attention à la double négation ci-dessous
                     if (place != -1) {
                         sauce.usersDisliked.splice(place, 1);
                         sauce.dislikes--;
@@ -108,10 +107,30 @@ exports.likeSauce = (req, res) => {
                     sauce.likes++;
 
                 }
-                break
-
+                break;
+            case -1:
+                if (sauce.usersDisliked.indexOf(req.body.userId) == -1) {
+                    const place = sauce.usersLiked.indexOf(req.body.userId);
+                    if (place != -1) {
+                        sauce.usersLiked.splice(place, 1);
+                        sauce.likes--;
+                    }
+                    sauce.usersDisliked.push(req.body.userId)
+                    sauce.dislikes++;
+                }
+                case 0:
+                    if (sauce.usersDisliked.indexOf(req.body.userId)) {
+                        const place = sauce.usersLiked.indexOf(req.body.userId);
+                        if (place != -1) {
+                            sauce.usersLiked.splice(place, 1);
+                            sauce.likes--;
+                        } else {
+                            const place = sauce.usersDisliked.indexOf(req.body.userId);
+                            sauce.usersDisliked.splice(place, 1);
+                            sauce.dislikes--;
+                        }
+                    }
         }
-
         Sauce.updateOne({
                 _id: req.params.id
             }, sauce).then(() => res.status(200).json({
@@ -121,60 +140,4 @@ exports.likeSauce = (req, res) => {
                 error
             }));
     })
-
 }
-
-
-/*  Sauce.updateOne({
-          _id: req.params.id,
-      }, {
-          ...req.body,
-          _id: req.params.id
-      }).then(() => {
-          userId = req.body.userId
-          if (action === 1) {
-              likes: req.body.likes === 0
-              usersLiked: req.body.usersLiked
-              $addToSet: {
-                  usersLiked,
-                  1
-              }
-              $inc: {
-                  likes,
-                  1
-              }
-          }
-          else if (action === -1) {
-              dislikes: req.body.dislikes === 0
-              usersDisliked: req.body.usersDisliked
-              $addToSet: {
-                  usersDisliked,
-                  1
-              }
-              $inc: {
-                  dislikes,
-                  1
-              }
-          }
-          else {
-              if (usersLiked.indexOf(userId)) {
-                  const place = usersLiked.indexOf('userId');
-                  const userMin = usersLiked.splice(place, 1);
-                  $pull: {
-                      usersLiked,
-                      userMin
-                  }
-              } else if (usersDisliked.indexOf(userId)) {
-                  const place = usersDisliked.indexOf('userId');
-                  const userMin = usersDisliked.splice(place, 1);
-                  $pull: {
-                      usersDisliked,
-                      userMin
-                  }
-              }
-          }
-      })
-      .catch((error) => res.status(500).json({
-          message: 'tu es sur la bonne erreur'
-      }));
-      */
