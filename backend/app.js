@@ -17,7 +17,7 @@ mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 
-// middleware correspondant à CORS
+// pour CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -41,22 +41,3 @@ module.exports = app;
 
 
 
-
-
-/* var multer = require('multer'); 
-    var uploadPicture = multer({ 
-    dest: 'temp/' 
-    }); 
-    var sharp = require('sharp'); 
-
-    app.post('/upload', uploadPicture.single('profileIcon'), function (req,res) { 
-     fs.readFile(req.file.path, function (err, data) { 
-     if (err) res.end('UNRESOLVABLE ERROR'); 
-    sharp(data).resize(200, 200).toFile('./photos/pic.jpg', function (err, info) { 
-    //DELETE THE TEMPORAL FILE 
-      fs.unlink(req.file.path, function (error) { 
-       if (error) res.end('UNRESOLVABLE ERROR'); //CODE 3 ALARM 
-       res.end('success'); 
-      }); 
-    } 
-    */
