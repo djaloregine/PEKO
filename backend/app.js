@@ -25,6 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 
+
 const path = require('path');
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -34,10 +35,3 @@ app.use('/api/sauces', produitsRoutes);
 
 
 module.exports = app;
-
-
-
-
-
-
-
