@@ -90,133 +90,140 @@ exports.modifySauce = (req, res, next) => {
 
 
 exports.likeSauce = (req, res) => {
-        console.log('Like');
-        Sauce.findById(req.params.id, (error, data) => {
-                    let sauce = data // collection = sauces sur MongoDB
-                    likes: req.params.likes
-                    console.log(req.params.likes);
-                    dislikes: req.params.dislikes
-                    usersLiked: req.params.usersLiked
-                    usersDisliked: req.params.usersDisliked
-                    switch ((req.body.likes) || (req.body.dislikes)) {
-                        case 1:
-                            sauce['likes'] = sauce['likes'] ? sauce['likes'] : 0;
-                            // si je donne la propriété likes soit j'ajoute like à l'objet sauce, soit je reviens à 0
-                            if (sauce['usersLiked'].includes(req.body.userId) == -1) {
-                                /* includes == -1 c'est que l'élément recherché n'est pas présent dans le tableau des usagers aimant la sauce */
-                                if (sauce['usersDisliked'].includes(req.body.userId)) {
-                                    const place = sauce.usersDisliked.includes(req.body.userId);
-                                    // je demande l'emplacement dans le tableau des usagers qui n'ont pas aimé de l'ID de celui qui n'a pas aimé 
-                                    if (place != -1) {
-                                        // (place != -1) c'est que j'ai trouvé qqu'un dans le tableau de ceux qui n'ont pas aimé 
-                                        sauce['usersDisliked'].splice(place, 0);
-                                        // je supprime cet usager qui n'a pas aimé du tableau 
-                                        sauce.dislikes--;
-                                        // je décrémente le tableau de cequi qui n'ont pas aimé 
-                                    }
-                                    sauce['usersLiked'].push(req.body.userId)
-                                    sauce.likes++;
-                                }
-                            }
-                            break;
-                        case -1:
-                            sauce['dislikes'] = sauce['dislikes'] ? sauce['dislikes'] : 0;
-                            if (sauce.usersDisliked.includes(req.body.userId) == -1) {
-                                const place = sauce.usersLiked.includes(req.body.userId);
-                                if (place != -1) {
-                                    sauce.usersLiked.splice(place, 0);
-                                    sauce.likes--;
-                                }
-                                sauce.usersDisliked.push(req.body.userId);
-                                sauce.dislikes++;
-                            }
-                            break;
-                        case 0:
-                            if ((sauce.usersDisliked.includes(req.body.userId)) || (sauce['usersLiked'].includes(req.body.userId))) {
-                                            const place = sauce.usersLiked.includes(req.body.userId);
-                                            if (place != -1) {
-                                                sauce.usersLiked.splice(place, 0);
-                                                sauce.likes--;
-                                            } else {
-                                                const place = sauce.usersDisliked.includes(req.body.userId);
-                                                sauce.usersDisliked.splice(place, 0);
-                                                sauce.dislikes--;
-                                            }
-                                        }
-                                        break;
-                                        default: {
-                                            console.log(error)
-                                        };
-                                    }
-                                    Sauce.updateOne({
-                                        _id: req.params.id
-                                    }, sauce).then(() => res.status(200).json({
-                                        message: 'sauce modifiée sur son like'
-                                    }))
-                                    .catch((error) => res.status(404).json({
-                                        error
-                                    }));
-                                })
+    Sauce.findById(req.params.id, (error, data) => {
+        let sauce = data // collection = sauces sur MongoDB
+        sauce.likes === 0;
+        sauce.dislikes === 0;
+        switch (req.body.like) {
+            case 1:
+                sauce['likes'] = sauce['likes'] ? sauce['likes'] : 0;
+                // si je donne la propriété likes soit j'ajoute likes à l'objet sauce, soit je reviens à 0
+                if (sauce['usersLiked'].includes(req.body.userId) == -1) {
+                    /* includes == -1 c'est que l'élément recherché n'est pas présent dans le tableau des usagers aimant la sauce */
+                    if (sauce['usersDisliked'].includes(req.body.userId)) {
+                        const place = sauce.usersDisliked.indexOf(req.body.userId);
+                        // je demande l'emplacement dans le tableau des usagers qui n'ont pas aimé de l'ID de celui qui n'a pas aimé 
+                        if (place != -1) {
+                            // (place != -1) c'est que j'ai trouvé qqu'un dans le tableau de ceux qui n'ont pas aimé 
+                            sauce['usersDisliked'].splice(place, 1);
+                            // je supprime cet usager qui n'a pas aimé du tableau 
+                            sauce.dislikes++;
+                            // j'incrémente le tableau de ce qui qui n'ont pas aimé puisque je dois passer de -1 à 0
+                        }
+                        sauce['usersLiked'].push(req.body.userId);
+                        sauce.likes++;
                     }
+                    Sauce.updateOne({
+                            _id: req.params.id
+                        }, sauce).then(() => res.status(200).json({
+                            message: 'sauce modifiée et aimée'
+                        }))
+                        .catch((error) => res.status(404).json({
+                            error
+                        }));
+                }
+                break;
+            case -1:
+                sauce['dislikes'] = sauce['dislikes'] ? sauce['dislikes'] : 0;
+                if (sauce.usersDisliked.includes(req.body.userId) == -1) {
+                    const place = sauce.usersLiked.indexOf(req.body.userId);
+                    if (place != -1) {
+                        sauce.usersLiked.splice(place, 1);
+                        sauce.likes--;
+                    }
+                    sauce.usersDisliked.push(req.body.userId);
+                    sauce.dislikes--;
+                }
+                Sauce.updateOne({
+                        _id: req.params.id
+                    }, sauce).then(() => res.status(200).json({
+                        message: 'sauce modifiée et pas aimée'
+                    }))
+                    .catch((error) => res.status(404).json({
+                        error
+                    }));
+                break;
+            case 0:
+                if ((sauce.usersDisliked.includes(req.body.userId)) || (sauce['usersLiked'].includes(req.body.userId))) {
+                    const place = sauce.usersLiked.indexOf(req.body.userId);
+                    if (place != -1) {
+                        sauce.usersLiked.splice(place, 1);
+                        sauce.likes--;
+                    } else {
+                        const place = sauce.usersDisliked.includes(req.body.userId);
+                        sauce.usersDisliked.splice(place, 1);
+                        sauce.dislikes++;
+                    }
+                    Sauce.updateOne({
+                            _id: req.params.id
+                        }, sauce).then(() => res.status(200).json({
+                            message: 'sauce modifiée pour retour à 0'
+                        }))
+                        .catch((error) => res.status(404).json({
+                            error
+                        }));
+                }
+                break;
 
-                    /*
-                    exports.likeSauce = (req, res) => {
-                        Sauce.findById(req.params.id, (error, data) => {
-                            let sauce = data // collection = sauces sur MongoDB
-                            switch (req.body.like) {
-                                case 1:
-                                    sauce['likes'] ? sauce['likes'] : 0;
-                                   
+        }
 
-                                    if (sauce['usersLiked'].includes(req.body.userId) == -1) {
-                                        
-                                        if(sauce['usersLiked'].includes(req.body.userId) == -1)
-                                        const place = sauce.usersDisliked.includes(req.body.userId);
-                                        // attention à la double négation ci-dessous
-                                        if (place != -1) {
-                                            sauce.usersDisliked.splice(place, 1);
-                                            sauce.dislikes--;
-                                        }
-                                        sauce.usersLiked.push(req.body.userId)
-                                        sauce.likes++;
-                                    }
-                                    break;
-                                case -1:
-                                    sauce['dislikes'] ? sauce['dislikes'] : 0;
-                                    if (sauce.usersDisliked.includes(req.body.userId) == -1) {
-                                        const place = sauce.usersLiked.includes(req.body.userId);
-                                        if (place != -2) {
-                                            sauce.usersLiked.splice(place, 1);
-                                            sauce.likes--;
-                                        }
-                                        sauce.usersDisliked.push(req.body.userId);
-                                        sauce.dislikes++;
-                                    }
-                                    case 0:
-                                        if (sauce.usersDisliked.includes(req.body.userId)) {
-                                            const place = sauce.usersLiked.includes(req.body.userId);
-                                            if (place != -1) {
-                                                sauce.usersLiked.splice(place, 1);
-                                                sauce.likes--;
-                                            } else {
-                                                const place = sauce.usersDisliked.includes(req.body.userId);
-                                                sauce.usersDisliked.splice(place, -1);
-                                                sauce.dislikes++;
-                                            }
-                                        }
-                            }
-                            Sauce.updateOne({
-                                    _id: req.params.id
-                                }, sauce).then(() => res.status(200).json({
-                                    message: 'sauce modifiée'
-                                }))
-                                .catch((error) => res.status(404).json({
-                                    error
-                                }));
-                        })
-                    } */
+    })
+}
 
+/*
+exports.likeSauce = (req, res) => {
+    Sauce.findById(req.params.id, (error, data) => {
+        let sauce = data // collection = sauces sur MongoDB
+        switch (req.body.like) {
+            case 1:
+                sauce['likes'] ? sauce['likes'] : 0;
+               
 
-
-                    /* 
-                    req.file ? pour fichier images. Voir middleware */
+                if (sauce['usersLiked'].includes(req.body.userId) == -1) {
+                    
+                    if(sauce['usersLiked'].includes(req.body.userId) == -1)
+                    const place = sauce.usersDisliked.includes(req.body.userId);
+                    // attention à la double négation ci-dessous
+                    if (place != -1) {
+                        sauce.usersDisliked.splice(place, 1);
+                        sauce.dislikes--;
+                    }
+                    sauce.usersLiked.push(req.body.userId)
+                    sauce.likes++;
+                }
+                break;
+            case -1:
+                sauce['dislikes'] ? sauce['dislikes'] : 0;
+                if (sauce.usersDisliked.includes(req.body.userId) == -1) {
+                    const place = sauce.usersLiked.includes(req.body.userId);
+                    if (place != -2) {
+                        sauce.usersLiked.splice(place, 1);
+                        sauce.likes--;
+                    }
+                    sauce.usersDisliked.push(req.body.userId);
+                    sauce.dislikes++;
+                }
+                break; 
+                case 0:
+                    if (sauce.usersDisliked.includes(req.body.userId)) {
+                        const place = sauce.usersLiked.includes(req.body.userId);
+                        if (place != -1) {
+                            sauce.usersLiked.splice(place, 1);
+                            sauce.likes--;
+                        } else {
+                            const place = sauce.usersDisliked.includes(req.body.userId);
+                            sauce.usersDisliked.splice(place, -1);
+                            sauce.dislikes++;
+                        }
+                    }
+        }
+        Sauce.updateOne({
+                _id: req.params.id
+            }, sauce).then(() => res.status(200).json({
+                message: 'sauce modifiée'
+            }))
+            .catch((error) => res.status(404).json({
+                error
+            }));
+    })
+} */
