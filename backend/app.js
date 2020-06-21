@@ -8,8 +8,9 @@ app.use(bodyParser.json());
 const usagersRoutes = require('./routes/usagers');
 const produitsRoutes = require('./routes/produits');
 
+const dotenv = require('dotenv').config()
 
-mongoose.connect('mongodb+srv://lemanach:maijuin2020@cluster0-7mglv.mongodb.net/test?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
