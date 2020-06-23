@@ -1,14 +1,15 @@
 const express = require('express');
-const app = express();
-
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+const mongoose = require('mongoose');
+const path = require('path');
+
+
 
 const usagersRoutes = require('./routes/usagers');
 const produitsRoutes = require('./routes/produits');
 
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv').config();
+
 
 mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
@@ -17,6 +18,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+const app = express();
 
 // pour CORS
 app.use((req, res, next) => {
@@ -27,7 +29,7 @@ app.use((req, res, next) => {
 });
 
 
-const path = require('path');
+app.use(bodyParser.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

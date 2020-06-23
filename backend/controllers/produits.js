@@ -4,7 +4,6 @@ const fs = require('fs'); // pour lire le contenu d'un fichier en JSON. Ici celu
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    console.log(sauceObject);
     delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
