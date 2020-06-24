@@ -3,13 +3,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 
-
-
 const usagersRoutes = require('./routes/usagers');
 const produitsRoutes = require('./routes/produits');
 
 const dotenv = require('dotenv').config();
-
 
 mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
